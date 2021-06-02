@@ -1,5 +1,6 @@
 package routers
 
+/*
 import (
 	"GoGitWeb/controllers"
 	"github.com/astaxie/beego"
@@ -7,4 +8,4 @@ import (
 
 func init() {
 	beego.Router("/", &controllers.MainController{})
-}
+}*/
