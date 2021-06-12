@@ -1,9 +1,11 @@
 package utils
 
 import (
+	"crypto/md5"
 	"database/sql"
 	"fmt"
 	"github.com/astaxie/beego"
+	//驱动包
 	_ "github.com/go-sql-driver/mysql"
 	"log"
 )
@@ -28,6 +30,7 @@ func InitMysql() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
+		fmt.Println("数据库链接成功")
 		db = db1
 		CreateTableWithUser()
 	}
@@ -52,15 +55,22 @@ func ModifyDB(sql string, args ...interface{}) (int64, error) {
 func CreateTableWithUser() {
 	sql := `CREATE TABLE IF NOT EXISTS users(
 			id INT(4) PRIMARY KEY AUTO_INCREMENT NOT NULL,
- 			username VARCHAR(64),
-			password VARCHAR(64),
+ 			username VARCHAR(100),
+			password VARCHAR(400),
 			status INT(4),
 			createtime INT(10)
 			);`
 	ModifyDB(sql)
+	fmt.Println("已创建数据库表格：users")
 }
 
 //查询
 func QueryRowDB(sql string) *sql.Row {
 	return db.QueryRow(sql)
+}
+
+//密码加密
+func MD5(str string) string {
+	md5str := fmt.Sprintf("%x", md5.Sum([]byte(str)))
+	return md5str
 }
