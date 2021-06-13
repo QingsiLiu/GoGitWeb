@@ -33,6 +33,7 @@ func InitMysql() {
 		fmt.Println("数据库链接成功")
 		db = db1
 		CreateTableWithUser()
+		CreateTableWithArticle()
 	}
 }
 
@@ -62,6 +63,20 @@ func CreateTableWithUser() {
 			);`
 	ModifyDB(sql)
 	fmt.Println("已创建数据库表格：users")
+}
+
+//创建文章表
+func CreateTableWithArticle() {
+	sql := `CREATE TABLE IF NOT EXISTS article(
+		id int(4) primary key auto_increment not null,
+		title varchar(40),
+		author varchar(20),
+		tags varchar(40),
+		short varchar(250),
+		content longtext,
+		createtime int(10)
+		);`
+	ModifyDB(sql)
 }
 
 //查询
