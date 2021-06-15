@@ -5,6 +5,8 @@ import (
 	"database/sql"
 	"fmt"
 	"github.com/astaxie/beego"
+	"time"
+
 	//驱动包
 	_ "github.com/go-sql-driver/mysql"
 	"log"
@@ -84,8 +86,18 @@ func QueryRowDB(sql string) *sql.Row {
 	return db.QueryRow(sql)
 }
 
+func QueryDB(sql string) (*sql.Rows, error) {
+	return db.Query(sql)
+}
+
 //密码加密
 func MD5(str string) string {
 	md5str := fmt.Sprintf("%x", md5.Sum([]byte(str)))
 	return md5str
+}
+
+//时间--->数字格式的转换
+func SwitchTimeStampToData(timeStamp int64) string {
+	t := time.Unix(timeStamp, 0)
+	return t.Format("2006-01-02  15:04:05")
 }
