@@ -10,7 +10,7 @@ type ShowArticleController struct {
 }
 
 func (s *ShowArticleController) Get() {
-	artId, _ := s.GetInt("id")
+	artId, _ := s.GetInt(":id")
 	fmt.Println("文章的id为： ", artId)
 
 	art := models.QueryArticlesWithId(artId)
