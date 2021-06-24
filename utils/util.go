@@ -81,7 +81,7 @@ func CreateTableWithArticle() {
 	ModifyDB(sql)
 }
 
-//查询
+//查询行数
 func QueryRowDB(sql string) *sql.Row {
 	return db.QueryRow(sql)
 }

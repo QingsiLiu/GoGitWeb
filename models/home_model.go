@@ -4,6 +4,7 @@ import (
 	"GoGitWeb/utils"
 	"bytes"
 	"fmt"
+	"github.com/astaxie/beego"
 	"html/template"
 	"strconv"
 	"strings"
@@ -86,9 +87,33 @@ func createTagsLinks(tags string) []TagLink {
 	return tagLink
 }
 
-// ConfigHomeFooterPageCode ----------分页/翻页------------
+// ConfigHomeFooterPageCode ----------分页/翻页------------  page是当前页数
 func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
 	pageCode := HomeFooterPageCode{}
+	nums := GetArticleRowNum()
+	//读取配置的每页条数
+	pageRow, _ := beego.AppConfig.Int("articleListPageNum")
+	//计算出总页数
+	fmt.Println(nums)
+	sumPageNum := (nums-1)/pageRow + 1
+
+	pageCode.ShowPage = fmt.Sprintf("%d/%d", page, sumPageNum)
+
+	//如果当前页数小于等于1，那么不存在上一页
+	if page <= 1 {
+		pageCode.HasPre = false
+	} else {
+		pageCode.HasPre = true
+	}
+	//如果当前页数大于等于总页数，那么不存在下一页
+	if page >= sumPageNum {
+		pageCode.HasNext = false
+	} else {
+		pageCode.HasNext = true
+	}
+
+	pageCode.PreLink = "/?page=" + strconv.Itoa(page-1)
+	pageCode.NextLink = "/?page=" + strconv.Itoa(page+1)
 
 	return pageCode
 }
