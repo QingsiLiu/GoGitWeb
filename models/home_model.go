@@ -94,7 +94,7 @@ func ConfigHomeFooterPageCode(page int) HomeFooterPageCode {
 	//读取配置的每页条数
 	pageRow, _ := beego.AppConfig.Int("articleListPageNum")
 	//计算出总页数
-	fmt.Println(nums)
+	fmt.Println("文章的总数量为：", nums)
 	sumPageNum := (nums-1)/pageRow + 1
 
 	pageCode.ShowPage = fmt.Sprintf("%d/%d", page, sumPageNum)

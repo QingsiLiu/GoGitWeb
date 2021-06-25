@@ -4,8 +4,8 @@ import (
 	"GoGitWeb/utils"
 	"fmt"
 	"github.com/astaxie/beego"
+	"log"
 	"strconv"
-	"strings"
 )
 
 //文章结构体
@@ -34,6 +34,12 @@ func insertArticle(article Article) (int64, error) {
 //将数据库中的文章删除
 func DeleteArticle(artid int) (int64, error) {
 	return utils.ModifyDB("delete from article where id=?", artid)
+}
+
+//更新数据库中的文章
+func UpdateArticle(article Article) (int64, error) {
+	return utils.ModifyDB("update article set title=?, tags=?, short=?, content=?, author=? where id=?",
+		article.Title, article.Tags, article.Short, article.Content, article.Author, article.Id)
 }
 
 //对数据库中的文章操作
@@ -74,17 +80,28 @@ func QueryArticlesWithId(id int) Article {
 	return art
 }
 
+//根据列名字段来查询文章（此处用作标签文章的展示），返回一个标签列表
+func QueryArticlesWithParam(param string) []string {
+	rows, err := utils.QueryDB(fmt.Sprintf("select %s from article", param))
+	if err != nil {
+		log.Println(err)
+	}
+	var paramlist []string
+	for rows.Next() {
+		tmp := ""
+		rows.Scan(&tmp)
+		paramlist = append(paramlist, tmp)
+	}
+	return paramlist
+}
+
 //通过标签来查询文章
 func QueryArticlesWithTag(tag string) ([]Article, error) {
-	tags := strings.Split(tag, "&")
-	sql := "where tags in ("
-	for index, tag_now := range tags {
-		if index < len(tags)-1 {
-			sql = sql + tag_now + ","
-		} else if index == len(tags)-1 {
-			sql = sql + tag_now + ")"
-		}
-	}
+	sql := "where tags like '%&" + tag + "&%'"
+	sql += " or tags like '%&" + tag + "'"
+	sql += " or tags like '" + tag + "&%'"
+	sql += " or tags like '" + tag + "'"
+	fmt.Println("通过标签查询文章sql：", sql)
 	return QueryArticlesWithCon(sql)
 }
 
@@ -107,7 +124,7 @@ var artcileRowsNum = 0
 
 //查询文章条数
 func QueryArticleRowNum() int {
-	row := utils.QueryRowDB("select conut(id) from article")
+	row := utils.QueryRowDB("select count(id) from article")
 	nums := 0
 	row.Scan(&nums)
 	return nums
