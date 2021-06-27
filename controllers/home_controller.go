@@ -15,6 +15,7 @@ func (h *HomeController) Get() {
 	tags := h.GetString("tag")
 	fmt.Println("tag:", tags)
 	page, _ := h.GetInt("page")
+
 	//初始化一个文章列表
 	var artList []models.Article
 
@@ -26,6 +27,7 @@ func (h *HomeController) Get() {
 		if page <= 0 {
 			page = 1
 		}
+		fmt.Println("page:", page)
 		artList, _ = models.FindArticleWithPage(page)
 		h.Data["PageCode"] = models.ConfigHomeFooterPageCode(page)
 		h.Data["HasFooter"] = true

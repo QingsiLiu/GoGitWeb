@@ -32,14 +32,14 @@ func InitMysql() {
 	if err != nil {
 		fmt.Println(err.Error())
 	} else {
-		fmt.Println("数据库链接成功")
 		db = db1
 		CreateTableWithUser()
 		CreateTableWithArticle()
+		CreateTableWithAlbum()
 	}
 }
 
-//操作数据库
+// ModifyDB 操作数据库
 func ModifyDB(sql string, args ...interface{}) (int64, error) {
 	result, err := db.Exec(sql, args...)
 	if err != nil {
@@ -54,7 +54,7 @@ func ModifyDB(sql string, args ...interface{}) (int64, error) {
 	return count, nil
 }
 
-//创建用户表
+// CreateTableWithUser 创建用户表
 func CreateTableWithUser() {
 	sql := `CREATE TABLE IF NOT EXISTS users(
 			id INT(4) PRIMARY KEY AUTO_INCREMENT NOT NULL,
@@ -64,10 +64,9 @@ func CreateTableWithUser() {
 			createtime INT(10)
 			);`
 	ModifyDB(sql)
-	fmt.Println("已创建数据库表格：users")
 }
 
-//创建文章表
+// CreateTableWithArticle 创建文章表
 func CreateTableWithArticle() {
 	sql := `CREATE TABLE IF NOT EXISTS article(
 		id int(4) primary key auto_increment not null,
@@ -81,7 +80,19 @@ func CreateTableWithArticle() {
 	ModifyDB(sql)
 }
 
-//查询行数
+//创建图片表
+func CreateTableWithAlbum() {
+	sql := `CREATE TABLE IF NOT EXISTS ALBUM(
+		id 			int(4)	PRIMARY KEY auto_increment not null,
+		filepath	varchar(255),
+		filename	varchar(64),
+		STATUS		int(4),
+		createtime	int(10)
+	);`
+	ModifyDB(sql)
+}
+
+// QueryRowDB 查询行数
 func QueryRowDB(sql string) *sql.Row {
 	return db.QueryRow(sql)
 }
@@ -90,13 +101,13 @@ func QueryDB(sql string) (*sql.Rows, error) {
 	return db.Query(sql)
 }
 
-//密码加密
+// MD5 密码加密
 func MD5(str string) string {
 	md5str := fmt.Sprintf("%x", md5.Sum([]byte(str)))
 	return md5str
 }
 
-//时间--->数字格式的转换
+// SwitchTimeStampToData 时间--->数字格式的转换
 func SwitchTimeStampToData(timeStamp int64) string {
 	t := time.Unix(timeStamp, 0)
 	return t.Format("2006-01-02  15:04:05")

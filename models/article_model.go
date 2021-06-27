@@ -8,7 +8,7 @@ import (
 	"strconv"
 )
 
-//文章结构体
+// Article 文章结构体
 type Article struct {
 	Id         int
 	Title      string
@@ -19,7 +19,7 @@ type Article struct {
 	Createtime int64
 }
 
-//用于添加一篇新的文章，进一步封装
+// AddArticle 用于添加一篇新的文章，进一步封装
 func AddArticle(article Article) (int64, error) {
 	i, err := insertArticle(article)
 	return i, err
@@ -31,18 +31,18 @@ func insertArticle(article Article) (int64, error) {
 		article.Title, article.Tags, article.Short, article.Content, article.Author, article.Createtime)
 }
 
-//将数据库中的文章删除
+// DeleteArticle 将数据库中的文章删除
 func DeleteArticle(artid int) (int64, error) {
 	return utils.ModifyDB("delete from article where id=?", artid)
 }
 
-//更新数据库中的文章
+// UpdateArticle 更新数据库中的文章
 func UpdateArticle(article Article) (int64, error) {
 	return utils.ModifyDB("update article set title=?, tags=?, short=?, content=?, author=? where id=?",
 		article.Title, article.Tags, article.Short, article.Content, article.Author, article.Id)
 }
 
-//对数据库中的文章操作
+// QueryArticlesWithCon 对数据库中的文章操作
 func QueryArticlesWithCon(sql string) ([]Article, error) {
 	sql = "select id,title,tags,short,content,author,createtime from article " + sql
 	rows, err := utils.QueryDB(sql)
@@ -66,7 +66,7 @@ func QueryArticlesWithCon(sql string) ([]Article, error) {
 	return artList, err
 }
 
-//通过文章的id来查询文章
+// QueryArticlesWithId 通过文章的id来查询文章
 func QueryArticlesWithId(id int) Article {
 	row := utils.QueryRowDB("select id, title, tags, short, content, author, createtime from article where id = " + strconv.Itoa(id))
 	title := ""
@@ -80,7 +80,7 @@ func QueryArticlesWithId(id int) Article {
 	return art
 }
 
-//根据列名字段来查询文章（此处用作标签文章的展示），返回一个标签列表
+// QueryArticlesWithParam 根据列名字段来查询文章（此处用作标签文章的展示），返回一个标签列表
 func QueryArticlesWithParam(param string) []string {
 	rows, err := utils.QueryDB(fmt.Sprintf("select %s from article", param))
 	if err != nil {
@@ -95,7 +95,7 @@ func QueryArticlesWithParam(param string) []string {
 	return paramlist
 }
 
-//通过标签来查询文章
+// QueryArticlesWithTag 通过标签来查询文章
 func QueryArticlesWithTag(tag string) ([]Article, error) {
 	sql := "where tags like '%&" + tag + "&%'"
 	sql += " or tags like '%&" + tag + "'"
@@ -105,13 +105,13 @@ func QueryArticlesWithTag(tag string) ([]Article, error) {
 	return QueryArticlesWithCon(sql)
 }
 
-//通过页码来查询文章
+// QueryArticleWithPage 通过页码来查询文章
 func QueryArticleWithPage(page, num int) ([]Article, error) {
 	sql := fmt.Sprintf("limit %d, %d", page*num, num)
 	return QueryArticlesWithCon(sql)
 }
 
-//通过页码来查询文章
+// FindArticleWithPage 通过页码来查询文章
 func FindArticleWithPage(page int) ([]Article, error) {
 	num, _ := beego.AppConfig.Int("articleListPageNum")
 	page--
@@ -122,7 +122,7 @@ func FindArticleWithPage(page int) ([]Article, error) {
 //存储表的行数，只有自己可以更改，当文章新增或者删除时需要更新这个值
 var artcileRowsNum = 0
 
-//查询文章条数
+// QueryArticleRowNum 查询文章条数
 func QueryArticleRowNum() int {
 	row := utils.QueryRowDB("select count(id) from article")
 	nums := 0
@@ -130,7 +130,7 @@ func QueryArticleRowNum() int {
 	return nums
 }
 
-//只有首次获取行数的时候采取统计表里的行数
+// GetArticleRowNum 只有首次获取行数的时候采取统计表里的行数
 func GetArticleRowNum() int {
 	if artcileRowsNum == 0 {
 		artcileRowsNum = QueryArticleRowNum()
