@@ -60,11 +60,13 @@ func (u *UploadController) Post() {
 
 	if fileType == "img" {
 		album := models.Album{0, filePathstr, fileName, 0, timeStamp}
-		models.
+		models.InsertAlbum(album)
 	}
+	u.Data["json"] = map[string]interface{}{"code": 1, "message": "上传成功"}
+	u.ServeJSON()
 }
 
 func (u *UploadController) responseErr(err error) {
-	u.Data["json"] = map[string]interface{}{"code" : 0, "message" : err}
+	u.Data["json"] = map[string]interface{}{"code": 0, "message": err}
 	u.ServeJSON()
 }
